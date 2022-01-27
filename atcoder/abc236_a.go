@@ -27,6 +27,7 @@ func solve() {
 	printf(string(sBytes))
 
 }
+
 func main() {
 	defer out.Flush()
 	solve()
