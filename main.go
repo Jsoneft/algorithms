@@ -18,8 +18,8 @@ func scan(a ...interface{})             { fmt.Fscan(in, a...) }
 func printf(f string, a ...interface{}) { fmt.Fprintf(out, f, a...) }
 
 type pair struct {
-	A int
-	B int
+	Color int
+	Size  int
 }
 
 var (
@@ -27,6 +27,7 @@ var (
 	a   []int
 	res []int
 	s   *list.List
+	cur = 0
 )
 
 func solve() {
@@ -37,31 +38,35 @@ func solve() {
 		scan(&a[i])
 	}
 	s = list.New()
+	cur = 0
 	for i := 0; i < n; i++ {
 		if s.Len() != 0 {
-			// 判断与下一个是否相同
-			if i+1 < n && a[i] == a[i+1] {
-				s.PushBack(a[i])
+			lstE := s.Back()
+			lst := lstE.Value.(pair)
+			// a,b -> a,b+1
+			if lst.Color == a[i] {
+				lst.Size++
+				cur++
+				lstE.Value = lst
+				if lst.Size >= lst.Color {
+					cur -= lst.Size
+					s.Remove(lstE)
+				}
 			} else {
-				// 判断与之前一个是否相同
-				b := s.Back()
-				if b.Value != a[i] {
-					s.PushBack(a[i])
-				}
-				for b.Value == a[i] {
-					s.Remove(b)
-					if s.Len() != 0 {
-						b = s.Back()
-					} else {
-						break
-					}
-				}
-
+				s.PushBack(pair{
+					Color: a[i],
+					Size:  1,
+				})
+				cur++
 			}
 		} else {
-			s.PushBack(a[i])
+			s.PushBack(pair{
+				Color: a[i],
+				Size:  1,
+			})
+			cur++
 		}
-		res = append(res, s.Len())
+		res = append(res, cur)
 	}
 	for _, v := range res {
 		printf("%d\n", v)
